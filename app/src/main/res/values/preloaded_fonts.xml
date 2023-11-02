@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="preloaded_fonts" translatable="false">
+        <item>@font/artifika</item>
+        <item>@font/bevan</item>
+        <item>@font/dotgothic16</item>
+        <item>@font/encode_sans_bold</item>
+        <item>@font/herr_von_muellerhoff</item>
+        <item>@font/holtwood_one_sc</item>
+        <item>@font/homemade_apple</item>
+        <item>@font/ibm_plex_mono_thin</item>
+        <item>@font/leckerli_one</item>
+        <item>@font/lustria</item>
+        <item>@font/mrs_sheppards</item>
+        <item>@font/rochester</item>
+        <item>@font/sail</item>
+        <item>@font/srisakdi_bold</item>
+        <item>@font/vibur</item>
+        <item>@font/warnes</item>
+    </array>
+</resources>

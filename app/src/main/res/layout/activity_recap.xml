@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF">
+
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_try_again"
+        android:layout_width="144dp"
+        android:layout_height="84dp"
+        android:layout_marginBottom="72dp"
+        android:text="Button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/button_mainmenu" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_mainmenu"
+        android:layout_width="144dp"
+        android:layout_height="84dp"
+        android:layout_marginBottom="72dp"
+        android:text="Button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/button_try_again"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.gridlayout.widget.GridLayout
+        android:id="@+id/grid_sequence_system"
+        android:layout_width="388dp"
+        android:layout_height="44dp"
+        android:layout_marginBottom="112dp"
+        app:columnCount="10"
+        app:layout_constraintBottom_toTopOf="@+id/button_try_again"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:rowCount="1">
+
+        <TextView
+            android:id="@+id/text_view_0"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="0"
+            app:layout_column="0"
+            app:layout_row="0"
+            tools:layout_conversion_absoluteHeight="49dp"
+            tools:layout_conversion_absoluteWidth="40dp"
+            tools:layout_editor_absoluteX="14dp"
+            tools:layout_editor_absoluteY="414dp" />
+
+        <TextView
+            android:id="@+id/text_view_1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="TextView"
+            android:layout_weight="1"
+            app:layout_column="1"
+            app:layout_row="0"
+            tools:layout_conversion_absoluteHeight="49dp"
+            tools:layout_conversion_absoluteWidth="35dp"
+            tools:layout_editor_absoluteX="54dp"
+            tools:layout_editor_absoluteY="414dp" />
+
+        <TextView
+            android:id="@+id/text_view_2"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="TextView"
+            android:layout_weight="1"
+            app:layout_column="2"
+            app:layout_row="0"
+            tools:layout_conversion_absoluteHeight="49dp"
+            tools:layout_conversion_absoluteWidth="30dp"
+            tools:layout_editor_absoluteX="89dp"
+            tools:layout_editor_absoluteY="414dp" />
+
+        <TextView
+            android:id="@+id/text_view_3"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="TextView"
+            android:layout_weight="1"
+            app:layout_column="3"
+            app:layout_row="0"
+            tools:layout_conversion_absoluteHeight="49dp"
+            tools:layout_conversion_absoluteWidth="32dp"
+            tools:layout_editor_absoluteX="119dp"
+            tools:layout_editor_absoluteY="414dp" />
+
+        <TextView
+            android:id="@+id/text_view_4"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="TextView"
+            android:layout_weight="1"
+            app:layout_column="4"
+            app:layout_row="0"
+            tools:layout_conversion_absoluteHeight="49dp"
+            tools:layout_conversion_absoluteWidth="31dp"
+            tools:layout_editor_absoluteX="151dp"
+            tools:layout_editor_absoluteY="414dp" />
+
+        <TextView
+            android:id="@+id/text_view_5"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="TextView"
+            android:layout_weight="1"
+            app:layout_column="5"
+            app:layout_row="0"
+            tools:layout_conversion_absoluteHeight="49dp"
+            tools:layout_conversion_absoluteWidth="32dp"
+            tools:layout_editor_absoluteX="182dp"
+            tools:layout_editor_absoluteY="414dp" />
+
+        <TextView
+            android:id="@+id/text_view_6"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="TextView"
+            android:layout_weight="1"
+            app:layout_column="6"
+            app:layout_row="0"
+            tools:layout_conversion_absoluteHeight="49dp"
+            tools:layout_conversion_absoluteWidth="28dp"
+            tools:layout_editor_absoluteX="214dp"
+            tools:layout_editor_absoluteY="414dp" />
+
+        <TextView
+            android:id="@+id/text_view_7"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="TextView"
+            android:layout_weight="1"
+            app:layout_column="7"
+            app:layout_row="0"
+            tools:layout_conversion_absoluteHeight="49dp"
+            tools:layout_conversion_absoluteWidth="25dp"
+            tools:layout_editor_absoluteX="242dp"
+            tools:layout_editor_absoluteY="414dp" />
+
+        <TextView
+            android:id="@+id/text_view_8"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="TextView"
+            android:layout_weight="1"
+            app:layout_column="8"
+            app:layout_row="0"
+            tools:layout_conversion_absoluteHeight="49dp"
+            tools:layout_conversion_absoluteWidth="34dp"
+            tools:layout_editor_absoluteX="267dp"
+            tools:layout_editor_absoluteY="414dp" />
+
+        <TextView
+            android:id="@+id/text_view_9"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="TextView"
+            android:layout_weight="1"
+            app:layout_column="9"
+            app:layout_row="0"
+            tools:layout_conversion_absoluteHeight="49dp"
+            tools:layout_conversion_absoluteWidth="58dp"
+            tools:layout_editor_absoluteX="301dp"
+            tools:layout_editor_absoluteY="414dp" />
+    </androidx.gridlayout.widget.GridLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

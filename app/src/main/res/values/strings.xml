@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Neuf</string>
+    <string name="button_start_eng">Start</string>
+    <string name="nine_title_eng">Nine</string>
+    <string name="title_activity_game_start">GameStartActivity</string>
+    <string name="title_activity_recap">RecapActivity</string>
+</resources>
