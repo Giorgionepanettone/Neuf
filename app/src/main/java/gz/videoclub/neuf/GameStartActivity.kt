@@ -77,6 +77,8 @@ class GameStartActivity : ComponentActivity() {
             colors = gradientColors_green
         )
 
+        val passed = intent.getBundleExtra("bundle")?.getBoolean("are30SecPassed")
+
         isGameOn = true
         minutes = 0
         seconds = -1
@@ -132,12 +134,14 @@ class GameStartActivity : ComponentActivity() {
 
             Box(modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xff, 0xfd, 0xfa))){
+                .background(Color(250,244,220))){
+
+                if(passed == true) ImageExample()
                 Column(modifier = Modifier
                     .fillMaxSize()
                     .padding(top = 25.dp)){
 
-                    timer()
+                    timer(passed as Boolean)
 
                     Row(modifier = Modifier
                         .fillMaxWidth()
@@ -181,7 +185,6 @@ class GameStartActivity : ComponentActivity() {
 
                                     // Other optional parameters
                                 )
-
                             }
                     }
 
@@ -266,22 +269,22 @@ class GameStartActivity : ComponentActivity() {
                         .padding(top = 85.dp, start = 25.dp, end = 25.dp)
                         ,horizontalArrangement = Arrangement.SpaceBetween){
 
-                        button_ins( R.drawable.number_0, number = 0, description = "number0", enabled = enabled_array_button_ins[0].value)
-                        button_ins( R.drawable.number_1, number = 1, description = "number1", enabled = enabled_array_button_ins[1].value)
-                        button_ins( R.drawable.number_2, number = 2, description = "number2", enabled = enabled_array_button_ins[2].value)
-                        button_ins( R.drawable.number_3, number = 3, description = "number3", enabled = enabled_array_button_ins[3].value)
-                        button_ins( R.drawable.number_4, number = 4, description = "number4", enabled = enabled_array_button_ins[4].value)
+                        button_ins(if(passed == true) R.drawable.number_0_white else R.drawable.number_0, number = 0, description = "number0", enabled = enabled_array_button_ins[0].value)
+                        button_ins( if(passed == true) R.drawable.number_1_white else R.drawable.number_1, number = 1, description = "number1", enabled = enabled_array_button_ins[1].value)
+                        button_ins( if(passed == true) R.drawable.number_2_white else R.drawable.number_2, number = 2, description = "number2", enabled = enabled_array_button_ins[2].value)
+                        button_ins( if(passed == true) R.drawable.number_3_white else R.drawable.number_3, number = 3, description = "number3", enabled = enabled_array_button_ins[3].value)
+                        button_ins( if(passed == true) R.drawable.number_4_white else R.drawable.number_4, number = 4, description = "number4", enabled = enabled_array_button_ins[4].value)
                     }
 
                     Row(modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 25.dp, start = 25.dp, end = 25.dp)
                     , horizontalArrangement = Arrangement.SpaceBetween){
-                        button_ins( R.drawable.number_5, number = 5, description = "number5", enabled = enabled_array_button_ins[5].value)
-                        button_ins( R.drawable.number_6, number = 6, description = "number6", enabled = enabled_array_button_ins[6].value)
-                        button_ins( R.drawable.number_7, number = 7, description = "number7", enabled = enabled_array_button_ins[7].value)
-                        button_ins( R.drawable.number_8, number = 8, description = "number8", enabled = enabled_array_button_ins[8].value)
-                        button_ins( R.drawable.number_9, number = 9, description = "number9", enabled = enabled_array_button_ins[9].value)
+                        button_ins( if(passed == true) R.drawable.number_5_white else R.drawable.number_5, number = 5, description = "number5", enabled = enabled_array_button_ins[5].value)
+                        button_ins( if(passed == true) R.drawable.number_6_white else R.drawable.number_6, number = 6, description = "number6", enabled = enabled_array_button_ins[6].value)
+                        button_ins( if(passed == true) R.drawable.number_7_white else R.drawable.number_7, number = 7, description = "number7", enabled = enabled_array_button_ins[7].value)
+                        button_ins( if(passed == true) R.drawable.number_8_white else R.drawable.number_8, number = 8, description = "number8", enabled = enabled_array_button_ins[8].value)
+                        button_ins( if(passed == true) R.drawable.number_9_white else R.drawable.number_9, number = 9, description = "number9", enabled = enabled_array_button_ins[9].value)
                     }
 
                     var state by remember {(mutableStateOf(0))}
@@ -312,7 +315,7 @@ class GameStartActivity : ComponentActivity() {
                             b.putBoolean("outcome", victory)
                             b.putInt("minutes", minutes)
                             b.putInt("seconds", seconds)
-
+                            b.putBoolean("are30SecPassed", passed)
                             val intent = Intent(this@GameStartActivity, RecapActivity::class.java)
                             intent.putExtras(b)
                             startActivity(intent)
@@ -449,7 +452,7 @@ val fontFamily = FontFamily(Font(GoogleFont("Playfair Display"), provider))
 
 
 @Composable
-fun timer(){
+fun timer(passed: Boolean){
     var timeInSeconds by remember{mutableStateOf(0)}
 
     LaunchedEffect(key1 = timeInSeconds){
@@ -460,7 +463,7 @@ fun timer(){
     }
 
     Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center, ){
-        Text(text = time_formatConverter(timeInSeconds), fontFamily = fontFamily, fontSize = 45.sp, fontWeight = FontWeight.Bold)
+        Text(text = time_formatConverter(timeInSeconds), fontFamily = fontFamily, fontSize = 45.sp, fontWeight = FontWeight.Bold, color = if(passed == true) Color.White else Color.Black)
     }
 }
 

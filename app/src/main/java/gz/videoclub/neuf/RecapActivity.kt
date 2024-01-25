@@ -54,6 +54,8 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import java.text.SimpleDateFormat
+import java.util.Calendar
 
 class RecapActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -75,12 +77,16 @@ class RecapActivity : ComponentActivity() {
             }
         }
         val bundle = intent.extras
-        val a = bundle?.getInt("minutes")?.times(60)?.plus(bundle.getInt("seconds")) as Int
-        val b =  bundle.getBoolean("outcome")
-        val c = bundle.getIntArray("sequence_user_final") as IntArray
-        val d = bundle.getIntArray("sequence_system") as IntArray
+        val time = bundle?.getInt("minutes")?.times(60)?.plus(bundle.getInt("seconds")) as Int
+        val outcome =  bundle.getBoolean("outcome")
+        val sequence_user = bundle.getIntArray("sequence_user_final") as IntArray
+        val sequence_system = bundle.getIntArray("sequence_system") as IntArray
+        val date = Calendar.getInstance().time
+        val formatter = SimpleDateFormat("yyyy-dd-MM HH:mm")
+        val current = formatter.format(date)
+        val passed = bundle.getBoolean("are30SecPassed")
 
-        var game : Game = Game(0, a,b, c, d )
+        var game = Game(0, time, outcome, sequence_user, sequence_system, current)
         val db = Room.databaseBuilder(
             applicationContext,
             AppDatabase::class.java, "database---neuf"
@@ -106,7 +112,10 @@ class RecapActivity : ComponentActivity() {
             NeufTheme{
                 Box(modifier = Modifier
                     .fillMaxSize()
-                    .background(Color(0xff, 0xfd, 0xfa))){
+                    .background(Color(250,244,220))){
+
+                    if(passed) ImageExample()
+
                     Column(modifier = Modifier
                         .fillMaxSize()
                         .padding(top = 20.dp, start = 16.dp, end = 16.dp, bottom = 20.dp)){
@@ -125,14 +134,16 @@ class RecapActivity : ComponentActivity() {
                         )
 
                         Text(text = if(bestGame.outcome) "Best time = " + timeFormatTranslator(bestGame.time) else "", fontSize = 30.sp, textAlign = TextAlign.Center, modifier = Modifier.padding(start = 7.dp, end = 7.dp))
-                        Text(text =  "Your time = " + timeFormatTranslator(game.time), fontSize = 30.sp, textAlign = TextAlign.Center, modifier = Modifier.padding(start = 7.dp, end = 7.dp ,top = 10.dp))
+                        Text(text =  "Your time = " + timeFormatTranslator(game.time), fontSize = 30.sp, textAlign = TextAlign.Center, modifier = Modifier.padding(start = 7.dp, end = 7.dp ,top = 10.dp), color = if(passed) Color.White else Color.Black)
 
                         val sequence_user_trans = sequence_translator(bundle.getIntArray("sequence_user_final") as IntArray)
                         val sequence_system_trans = sequence_translator(bundle.getIntArray("sequence_system") as IntArray)
 
-                        row_sequence("Your sequence:", sequence_user_trans, sequence_system_trans, 0)
+                        Text("Your sequence:", fontSize = 30.sp, modifier = Modifier.padding(start = 7.dp, top = 20.dp), color = if(passed) Color.White else Color.Black)
+                        row_sequence(sequence_user_trans, sequence_system_trans, 0, 0)
 
-                        row_sequence("Mistery sequence:", sequence_user_trans, sequence_system_trans, 1)
+                        Text("Mistery sequence:", fontSize = 30.sp, modifier = Modifier.padding(start = 7.dp, top = 20.dp), color = if(passed) Color.White else Color.Black)
+                        row_sequence(sequence_user_trans, sequence_system_trans, 1, 0)
 
 
                         val context = LocalContext.current
@@ -146,8 +157,11 @@ class RecapActivity : ComponentActivity() {
                                     .padding(top = 65.dp)
                                     .size(height = 85.dp, width = 275.dp)
                                 , onClick = {
-                                val intent = Intent(context, GameStartActivity::class.java)
-                                startActivity(intent)
+                                    var bundlee = Bundle()
+                                    bundlee.putBoolean("are30SecPassed", passed)
+                                    val intent = Intent(context, GameStartActivity::class.java)
+                                    intent.putExtra("bundle", bundlee)
+                                    startActivity(intent)
                             }, CircleShape
                             ,true
                             ,21)
@@ -161,7 +175,10 @@ class RecapActivity : ComponentActivity() {
                                     .padding(top = 40.dp)
                                     .size(height = 85.dp, width = 275.dp)
                                 ,onClick = {
+                                    var bundlee = Bundle()
+                                    bundlee.putBoolean("are30SecPassed", passed)
                                     val intent = Intent(context, MainActivity::class.java)
+                                    intent.putExtra("bundle", bundlee)
                                     startActivity(intent)
                                 }, CircleShape
                                 ,true
@@ -171,24 +188,20 @@ class RecapActivity : ComponentActivity() {
                     }
 
                 }
-
-
             }
         }
-
-
     }
 
 }
 
 
 @Composable
-fun row_sequence(title_name : String,sequence_user_trans: IntArray, sequence_system_trans: IntArray, sequence_to_show: Int){ //sequence_to_show : 0 = user_sequence, 1 = system_sequence
-    Text(title_name, fontSize = 30.sp, modifier = Modifier.padding(start = 7.dp, top = 20.dp))
+fun row_sequence(sequence_user_trans: IntArray, sequence_system_trans: IntArray, sequence_to_show: Int, padding: Int){ //sequence_to_show : 0 = user_sequence, 1 = system_sequence
+
 
     Row(modifier = Modifier
         .fillMaxWidth()
-        .padding(top = 10.dp, start = 4.dp), horizontalArrangement = Arrangement.SpaceEvenly){
+        .padding(top = 10.dp, start = 4.dp, bottom = padding.dp), horizontalArrangement = Arrangement.SpaceEvenly){
         for(i in 0 until 10){
             var int = 0
             var color = Color.Unspecified
@@ -266,7 +279,8 @@ data class Game(@PrimaryKey(autoGenerate = true) var id: Int,
                 @ColumnInfo("time") var time: Int,
                 @ColumnInfo("outcome") var outcome: Boolean,
                 @ColumnInfo("sequence_user") var sequence_user : IntArray,
-                @ColumnInfo("sequence_system") var sequence_system: IntArray){
+                @ColumnInfo("sequence_system") var sequence_system: IntArray,
+                @ColumnInfo("date") var date: String ){
 }
 
 @Dao
@@ -308,8 +322,6 @@ fun insertOrUpdateGame(game: Game, dao: GameDao) {
         dao.insert(game)
         return
     }
-
-
 
     if(bestGame.outcome == false || game.time < bestGame.time){
         game.id = 1

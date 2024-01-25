@@ -1,12 +1,12 @@
 package gz.videoclub.neuf
 
-import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
-import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,19 +16,64 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.googlefonts.Font
 import androidx.compose.ui.text.googlefonts.GoogleFont
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat.startActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import coil.ImageLoader
+import coil.compose.rememberAsyncImagePainter
+import coil.decode.GifDecoder
+import coil.decode.ImageDecoderDecoder
 import gz.videoclub.neuf.ui.theme.gradientColors
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
+
 
 class MainActivity : ComponentActivity() {
+    private var are30SecPassed by mutableStateOf(false)
+    private var timePassed by mutableStateOf(-1)
+
+    override fun onResume() {
+        super.onResume()
+        timePassed = -1
+    }
+
+    private fun timer() {
+        if(!are30SecPassed) {
+            lifecycleScope.launch {
+                lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    while (true) {
+                        timePassed++
+                        if (timePassed > 29) {
+                            withContext(Dispatchers.Main) {
+                                are30SecPassed = true
+                            }
+                            break
+                        }
+                        delay(1000)
+                    }
+                }
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,26 +88,70 @@ class MainActivity : ComponentActivity() {
             certificates = R.array.com_google_android_gms_fonts_certs
         )
         val fontFamily = FontFamily(Font(GoogleFont("Playfair Display"), provider))
+
+        val bundlee = intent.getBundleExtra("bundle")
+        if(bundlee != null){
+            are30SecPassed = bundlee.getBoolean("are30SecPassed")
+        }
+
         setContent {
-            Box(modifier = Modifier.fillMaxSize().background(Color(0xff, 0xfd, 0xfa))) {
+
+            val context = LocalContext.current
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .background(Color(250, 244, 220))
+            )
+            {
+
+                if(are30SecPassed) ImageExample()
+
                 Column(modifier = Modifier
                     .fillMaxSize()
                     .padding(all = 20.dp)) {
+
+
+
                     Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center){
-                        Text("Nine", modifier = Modifier.padding(top = 40.dp), fontSize = 100.sp, fontFamily = fontFamily)
+                        Text("Nine", modifier = Modifier.padding(top = 40.dp), fontSize = 100.sp, fontFamily = fontFamily, color = if(are30SecPassed) Color.White else Color.Black)
                     }
 
-                    val context = LocalContext.current
+
                     Box(modifier = Modifier.fillMaxWidth(),
                         contentAlignment = Alignment.Center) {
+
+
+                        buttonGradient("History"
+                            , gradient
+                            , Modifier
+                                .padding(top = 250.dp)
+                                .size(height = 85.dp, width = 275.dp)
+                            ,onClick = {
+                                var bundle = Bundle()
+                                bundle.putBoolean("are30SecPassed", are30SecPassed)
+                                val intent = Intent(context, HistoryActivity::class.java)
+                                intent.putExtra("bundle", bundle)
+                                startActivity(context, intent, null)
+                            }, CircleShape
+                            ,true
+                            ,30)
+                    }
+
+
+                    Box(modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center) {
+
+
                         buttonGradient("Start"
                             , gradient
                             , Modifier
-                                .padding(top = 400.dp)
+                                .padding(top = 50.dp)
                                 .size(height = 85.dp, width = 275.dp)
                             ,onClick = {
+                                var bundle = Bundle()
+                                bundle.putBoolean("are30SecPassed", are30SecPassed)
                                 val intent = Intent(context, GameStartActivity::class.java)
-                                startActivity(intent)
+                                intent.putExtra("bundle", bundle)
+                                startActivity(context, intent, bundle)
                             }, CircleShape
                             ,true
                             ,30)
@@ -70,14 +159,27 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-
-    }
+        timer()
+}
 }
 
-class Clicker(private val context: Context): View.OnClickListener{
-    override fun onClick(view: View?){
-        if(view == null) return
-        val intent = Intent(context, GameStartActivity::class.java)
-        context.startActivity(intent)
-    }
+@Composable
+fun ImageExample() { //function taken from stackoverflow
+    val imageLoader = ImageLoader.Builder(LocalContext.current)
+        .components {
+            if (SDK_INT >= 28) {
+                add(ImageDecoderDecoder.Factory())
+            } else {
+                add(GifDecoder.Factory())
+            }
+        }
+        .build()
+
+    Image(
+        painter = rememberAsyncImagePainter(R.drawable.sky_gif0, imageLoader),
+        contentDescription = null,
+        modifier = Modifier.fillMaxSize(),
+        contentScale = ContentScale.FillHeight
+    )
 }
+
