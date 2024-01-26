@@ -1,5 +1,6 @@
 package gz.videoclub.neuf
 
+import android.content.Context
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -26,6 +27,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import androidx.compose.foundation.lazy.items
+import java.util.Locale
 
 class HistoryActivity: ComponentActivity() {
 
@@ -39,6 +41,7 @@ class HistoryActivity: ComponentActivity() {
         ).build()
         val gameDao = db.gameDao()
 
+        val language = Locale.getDefault().language
         lateinit var listOfGames:  List<Game>
 
         val job = GlobalScope.launch {
@@ -60,7 +63,11 @@ class HistoryActivity: ComponentActivity() {
 
                 Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                     Text(
-                        "History",
+                        when(language){
+                            "en" -> getString(R.string.History_eng)
+                            "it" -> getString(R.string.History_ita)
+                            else -> getString(R.string.History_eng)
+                        },
                         modifier = Modifier.padding(top = 10.dp),
                         fontSize = 80.sp,
                         fontFamily = fontFamily,
@@ -72,18 +79,22 @@ class HistoryActivity: ComponentActivity() {
                     .fillMaxSize()
                     .padding(top = 150.dp)) {
                     LazyColumn(
-                        modifier = Modifier.fillMaxSize().background(if(passed == true) Color.Transparent else Color.White)
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(if (passed == true) Color.Transparent else Color.White)
                             //.padding(top = 150.dp)
                     ) {
                         items(listOfGames.reversed()){game ->
 
                             matchHistory(
-                            game.sequence_user,
-                            game.sequence_system,
-                            game.outcome,
-                            game.date.substring(0, 10),
-                            timeFormatTranslator(game.time),
-                                passed as Boolean
+                                sequence_translator(game.sequence_user),
+                                sequence_translator(game.sequence_system),
+                                game.outcome,
+                                game.date.substring(0, 10),
+                                timeFormatTranslator(game.time),
+                                passed as Boolean,
+                                language,
+                                this@HistoryActivity
                         )
                         }
                     }
@@ -95,8 +106,17 @@ class HistoryActivity: ComponentActivity() {
 
 
 @Composable
-fun matchHistory(user_sequence: IntArray, system_sequence: IntArray, result: Boolean, date: String, time: String, passed: Boolean){
-    val text = if(result) "Victory" else "Defeat"
+fun matchHistory(user_sequence: IntArray, system_sequence: IntArray, result: Boolean, date: String, time: String, passed: Boolean, language: String, context: Context){
+    val text = if(result) when(language){
+        "en" -> context.resources.getString(R.string.Victory_eng)
+        "it" -> context.resources.getString(R.string.Victory_ita)
+        else -> context.resources.getString(R.string.Victory_eng)
+    } else when(language){
+        "en" -> context.resources.getString(R.string.Defeat_eng)
+        "it" -> context.resources.getString(R.string.Defeat_ita)
+        else -> context.resources.getString(R.string.Defeat_eng)
+    }
+
     val color_main_text: Color = if(result) gradientColors[0] else Color(0xdc, 0x14, 0x3c)
     val color_back = if(passed) Color.Transparent else Color(250, 244, 220)
 
@@ -110,7 +130,12 @@ fun matchHistory(user_sequence: IntArray, system_sequence: IntArray, result: Boo
     {
         Column {
             Text(
-                "$text $date time: $time",
+                when(language){
+                    "en" -> context.resources.getString(R.string.Time_eng, text, date, time)
+                    "it" -> context.resources.getString(R.string.Time_ita, text, date, time)
+                    else -> context.resources.getString(R.string.Time_eng, text, date, time)
+                },
+                //stringResource(R.string.Time_eng, text, date, time),
                 fontSize = 22.sp,
                 fontFamily = fontFamily,
                 color = color_main_text,

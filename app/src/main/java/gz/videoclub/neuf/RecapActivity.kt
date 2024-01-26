@@ -56,6 +56,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Locale
 
 class RecapActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,6 +64,11 @@ class RecapActivity : ComponentActivity() {
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
 
         var first_time = true
+        val language = Locale.getDefault().language
+        val gradient = Brush.horizontalGradient(
+            colors = gradientColors
+        )
+
         onBackPressedDispatcher.addCallback(this) {
             if(first_time) {
                 Toast.makeText(this@RecapActivity, "Press again to exit", Toast.LENGTH_LONG).show()
@@ -76,6 +82,7 @@ class RecapActivity : ComponentActivity() {
                 finishAffinity()
             }
         }
+
         val bundle = intent.extras
         val time = bundle?.getInt("minutes")?.times(60)?.plus(bundle.getInt("seconds")) as Int
         val outcome =  bundle.getBoolean("outcome")
@@ -86,7 +93,7 @@ class RecapActivity : ComponentActivity() {
         val current = formatter.format(date)
         val passed = bundle.getBoolean("are30SecPassed")
 
-        var game = Game(0, time, outcome, sequence_user, sequence_system, current)
+        val game = Game(0, time, outcome, sequence_user, sequence_system, current)
         val db = Room.databaseBuilder(
             applicationContext,
             AppDatabase::class.java, "database---neuf"
@@ -112,7 +119,7 @@ class RecapActivity : ComponentActivity() {
             NeufTheme{
                 Box(modifier = Modifier
                     .fillMaxSize()
-                    .background(Color(250,244,220))){
+                    .background(Color(250, 244, 220))){
 
                     if(passed) ImageExample()
 
@@ -122,27 +129,52 @@ class RecapActivity : ComponentActivity() {
 
                         val outcome = bundle.getBoolean("outcome")
 
-                        val main_text = if(outcome) "Victory" else "Defeat"
+                        val main_text: String = (if(outcome) {when(language){
+                            "en" -> getString(R.string.Victory_eng)
+                            "it" -> getString(R.string.Victory_ita)
+                            else -> getString(R.string.Victory_eng)
+                        }}  else {when(language){
+                            "en" -> getString(R.string.Defeat_eng)
+                            "it" -> getString(R.string.Defeat_ita)
+                            else -> getString(R.string.Defeat_eng)
+                        }})
+
+
                         val color_main_text = if(outcome) gradientColors[0] else Color(0xdc, 0x14, 0x3c)
 
-                        val gradient = Brush.horizontalGradient(
-                            colors = gradientColors
-                        )
+                        Text(text = main_text, fontSize = when(language){
+                            "en" -> 100.sp
+                            "it" ->85.sp
+                            else -> 100.sp
+                        }, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth(), color = color_main_text, fontFamily = fontFamily)
 
-                        Text(main_text, modifier = Modifier.fillMaxWidth(),fontSize = 100.sp, textAlign = TextAlign.Center,
-                            color = color_main_text, fontFamily = fontFamily
-                        )
 
-                        Text(text = if(bestGame.outcome) "Best time = " + timeFormatTranslator(bestGame.time) else "", fontSize = 30.sp, textAlign = TextAlign.Center, modifier = Modifier.padding(start = 7.dp, end = 7.dp))
-                        Text(text =  "Your time = " + timeFormatTranslator(game.time), fontSize = 30.sp, textAlign = TextAlign.Center, modifier = Modifier.padding(start = 7.dp, end = 7.dp ,top = 10.dp), color = if(passed) Color.White else Color.Black)
+                        Text(text = if(bestGame.outcome) when(language){
+                            "en" -> getString(R.string.Best_time_eng)
+                            "it" -> getString(R.string.Best_time_ita)
+                            else -> getString(R.string.Best_time_eng)
+                        } + timeFormatTranslator(bestGame.time) else "", fontSize = 30.sp, textAlign = TextAlign.Center, modifier = Modifier.padding(start = 7.dp, end = 7.dp))
+                        Text(text = when(language){
+                            "en" -> getString(R.string.Your_time_eng)
+                            "it" -> getString(R.string.Your_time_ita)
+                            else -> getString(R.string.Your_time_eng)
+                        } + timeFormatTranslator(game.time), fontSize = 30.sp, textAlign = TextAlign.Center, modifier = Modifier.padding(start = 7.dp, end = 7.dp ,top = 10.dp), color = if(passed) Color.White else Color.Black)
 
                         val sequence_user_trans = sequence_translator(bundle.getIntArray("sequence_user_final") as IntArray)
                         val sequence_system_trans = sequence_translator(bundle.getIntArray("sequence_system") as IntArray)
 
-                        Text("Your sequence:", fontSize = 30.sp, modifier = Modifier.padding(start = 7.dp, top = 20.dp), color = if(passed) Color.White else Color.Black)
+                        Text(when(language){
+                            "en" -> getString(R.string.Your_sequence_eng)
+                            "it" -> getString(R.string.Your_sequence_ita)
+                            else -> getString(R.string.Your_sequence_eng)
+                        }, fontSize = 30.sp, modifier = Modifier.padding(start = 7.dp, top = 20.dp), color = if(passed) Color.White else Color.Black)
                         row_sequence(sequence_user_trans, sequence_system_trans, 0, 0)
 
-                        Text("Mistery sequence:", fontSize = 30.sp, modifier = Modifier.padding(start = 7.dp, top = 20.dp), color = if(passed) Color.White else Color.Black)
+                        Text(when(language){
+                            "en" -> getString(R.string.Mistery_sequence_eng)
+                            "it" -> getString(R.string.Mistery_sequence_ita)
+                            else -> getString(R.string.Mistery_sequence_eng)
+                        }, fontSize = 30.sp, modifier = Modifier.padding(start = 7.dp, top = 20.dp), color = if(passed) Color.White else Color.Black)
                         row_sequence(sequence_user_trans, sequence_system_trans, 1, 0)
 
 
@@ -150,14 +182,19 @@ class RecapActivity : ComponentActivity() {
                         Box(modifier = Modifier.fillMaxWidth(),
                             contentAlignment = Alignment.Center) {
 
-                            buttonGradient("Try again"
+                            buttonGradient(
+                                when(language){
+                                    "en" -> getString(R.string.Try_again_eng)
+                                    "it" -> getString(R.string.Try_again_ita)
+                                    else -> getString(R.string.Try_again_eng)
+                                }
                                 , gradient
                                 ,
                                 Modifier
                                     .padding(top = 65.dp)
                                     .size(height = 85.dp, width = 275.dp)
                                 , onClick = {
-                                    var bundlee = Bundle()
+                                    val bundlee = Bundle()
                                     bundlee.putBoolean("are30SecPassed", passed)
                                     val intent = Intent(context, GameStartActivity::class.java)
                                     intent.putExtra("bundle", bundlee)
@@ -169,13 +206,18 @@ class RecapActivity : ComponentActivity() {
 
                         Box(modifier = Modifier.fillMaxWidth(),
                             contentAlignment = Alignment.Center) {
-                            buttonGradient("Main Menu"
+                            buttonGradient(
+                                when(language){
+                                    "en" -> getString(R.string.Main_menu_eng)
+                                    "it" -> getString(R.string.Main_menu_ita)
+                                    else -> getString(R.string.Main_menu_eng)
+                                }
                                 , gradient
                                 , Modifier
                                     .padding(top = 40.dp)
                                     .size(height = 85.dp, width = 275.dp)
                                 ,onClick = {
-                                    var bundlee = Bundle()
+                                    val bundlee = Bundle()
                                     bundlee.putBoolean("are30SecPassed", passed)
                                     val intent = Intent(context, MainActivity::class.java)
                                     intent.putExtra("bundle", bundlee)
@@ -184,14 +226,11 @@ class RecapActivity : ComponentActivity() {
                                 ,true
                                 ,21)
                         }
-
                     }
-
                 }
             }
         }
     }
-
 }
 
 
@@ -261,8 +300,6 @@ fun buttonGradient(text: String,
         }
     }
 }
-
-
 
 
 fun sequence_translator(sequence : IntArray): IntArray{ //translates sequence from a value:position format to position:value

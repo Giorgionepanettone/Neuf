@@ -44,7 +44,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-
+import java.util.Locale
 
 
 class MainActivity : ComponentActivity() {
@@ -78,6 +78,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+
+        val language = Locale.getDefault().language
 
         val gradient = Brush.horizontalGradient(
             colors = gradientColors
@@ -120,13 +122,18 @@ class MainActivity : ComponentActivity() {
                         contentAlignment = Alignment.Center) {
 
 
-                        buttonGradient("History"
+                        buttonGradient(
+                            when(language){
+                                "en" -> getString(R.string.History_eng)
+                                "it" -> getString(R.string.History_ita)
+                                else -> getString(R.string.History_eng)
+                            }
                             , gradient
                             , Modifier
                                 .padding(top = 250.dp)
                                 .size(height = 85.dp, width = 275.dp)
                             ,onClick = {
-                                var bundle = Bundle()
+                                val bundle = Bundle()
                                 bundle.putBoolean("are30SecPassed", are30SecPassed)
                                 val intent = Intent(context, HistoryActivity::class.java)
                                 intent.putExtra("bundle", bundle)
@@ -141,13 +148,18 @@ class MainActivity : ComponentActivity() {
                         contentAlignment = Alignment.Center) {
 
 
-                        buttonGradient("Start"
+                        buttonGradient(
+                            when(language){
+                                "en" -> getString(R.string.Start_eng)
+                                "it" -> getString(R.string.Start_ita)
+                                else -> getString(R.string.Start_eng)
+                                          }
                             , gradient
                             , Modifier
                                 .padding(top = 50.dp)
                                 .size(height = 85.dp, width = 275.dp)
                             ,onClick = {
-                                var bundle = Bundle()
+                                val bundle = Bundle()
                                 bundle.putBoolean("are30SecPassed", are30SecPassed)
                                 val intent = Intent(context, GameStartActivity::class.java)
                                 intent.putExtra("bundle", bundle)

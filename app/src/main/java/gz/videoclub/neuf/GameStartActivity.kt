@@ -58,6 +58,7 @@ import androidx.compose.ui.text.googlefonts.GoogleFont
 import com.wajahatkarim.flippable.Flippable
 import com.wajahatkarim.flippable.FlippableController
 import kotlinx.coroutines.delay
+import java.util.Locale
 
 class GameStartActivity : ComponentActivity() {
     @OptIn(ExperimentalAnimationApi::class, DelicateCoroutinesApi::class)
@@ -78,6 +79,8 @@ class GameStartActivity : ComponentActivity() {
         )
 
         val passed = intent.getBundleExtra("bundle")?.getBoolean("are30SecPassed")
+
+        val language = Locale.getDefault().language
 
         isGameOn = true
         minutes = 0
@@ -134,7 +137,7 @@ class GameStartActivity : ComponentActivity() {
 
             Box(modifier = Modifier
                 .fillMaxSize()
-                .background(Color(250,244,220))){
+                .background(Color(250, 244, 220))){
 
                 if(passed == true) ImageExample()
                 Column(modifier = Modifier
@@ -328,7 +331,12 @@ class GameStartActivity : ComponentActivity() {
 
                     Box(modifier = Modifier.fillMaxWidth(),
                         contentAlignment = Alignment.Center) {
-                        buttonGradient("Submit"     //button_submit
+                        buttonGradient( //button_submit
+                            when(language){
+                                "en" -> getString(R.string.Submit_eng)
+                                "it" -> getString(R.string.Submit_ita)
+                                else -> getString(R.string.Submit_eng)
+                            }
                             , gradient
                             ,
                             Modifier
